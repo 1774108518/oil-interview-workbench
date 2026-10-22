@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0B2C4A" />
+  <title>三桶油笔试面试训练工作台</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app">
+
+    <!-- 顶部：标题 + 日期 -->
+    <header class="hero">
+      <p class="hero-eyebrow">2027 届校招 · 每日训练</p>
+      <h1 class="hero-title">三桶油笔试面试训练工作台</h1>
+      <p class="hero-date" id="todayDate"></p>
+    </header>
+
+    <!-- 第一块：今日学习时间 -->
+    <section class="card" aria-labelledby="timeTitle">
+      <div class="card-head">
+        <h2 class="card-title" id="timeTitle">今日学习时间</h2>
+        <span class="card-note">目标随时可改</span>
+      </div>
+
+      <p class="time-value">
+        <span class="time-number" id="minutesValue">0</span>
+        <span class="time-unit">分钟</span>
+      </p>
+
+      <label class="goal-label" for="goalInput">今天打算学多少分钟</label>
+      <div class="goal-field">
+        <input
+          class="goal-input"
+          id="goalInput"
+          type="number"
+          inputmode="numeric"
+          min="0"
+          max="600"
+          step="10"
+          placeholder="例如 90"
+        />
+        <span class="goal-suffix">分钟</span>
+      </div>
+
+      <div
+        class="progress"
+        id="progressTrack"
+        role="progressbar"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuenow="0"
+        aria-label="今日学习进度"
+      >
+        <span class="progress-fill" id="progressFill"></span>
+      </div>
+      <p class="progress-text" id="progressText"></p>
+    </section>
+
+    <!-- 第二块：两个训练入口 -->
+    <section class="actions" aria-label="训练入口">
+      <button class="action-btn" type="button" id="btnWritten">
+        <span class="action-main">
+          <span class="action-title">开始笔试模拟</span>
+          <span class="action-sub">行测 · 专业综合 · 英语</span>
+        </span>
+        <span class="action-arrow" aria-hidden="true"></span>
+      </button>
+
+      <button class="action-btn" type="button" id="btnInterview">
+        <span class="action-main">
+          <span class="action-title">开始面试模拟</span>
+          <span class="action-sub">结构化面试 · 专业追问</span>
+        </span>
+        <span class="action-arrow" aria-hidden="true"></span>
+      </button>
+    </section>
+
+    <!-- 第三块：今日任务 -->
+    <section class="card" aria-labelledby="taskTitle">
+      <div class="card-head">
+        <h2 class="card-title" id="taskTitle">今日任务</h2>
+        <span class="card-note" id="taskCount">0 / 2 已完成</span>
+      </div>
+
+      <ul class="task-list">
+        <li class="task-item" data-task="written">
+          <span class="task-check" aria-hidden="true"></span>
+          <span class="task-name">笔试</span>
+          <span class="task-status">未完成</span>
+        </li>
+        <li class="task-item" data-task="interview">
+          <span class="task-check" aria-hidden="true"></span>
+          <span class="task-name">面试</span>
+          <span class="task-status">未完成</span>
+        </li>
+      </ul>
+    </section>
+
+    <p class="foot-note">记录只保存在当前浏览器，换设备或清理缓存会重新开始。</p>
+
+  </main>
+
+  <!-- 面试设置面板：先定岗位和简历，再进面试 -->
+  <dialog class="modal modal-setup" id="setupModal" aria-labelledby="setupTitle">
+    <div class="modal-head">
+      <p class="modal-eyebrow">面试设置 · 定制化</p>
+      <h2 class="modal-title" id="setupTitle">先定岗位和简历</h2>
+      <button class="modal-close" type="button" id="setupClose" aria-label="关闭设置面板"></button>
+    </div>
+
+    <div class="modal-body">
+      <label class="field-label" for="roleSelect">面试岗位</label>
+      <select class="field-select" id="roleSelect">
+        <option value="中石油-新疆油田分公司">中石油 · 新疆油田分公司</option>
+        <option value="中海油海南分公司-工程师">中海油 · 海南分公司（工程师）</option>
+        <option value="中海油服钻井现场操作岗">中海油服 · 钻井现场操作岗</option>
+        <option value="中石化-炼化技术">中石化 · 炼化技术</option>
+      </select>
+
+      <label class="field-label" for="resumeInput">简历文本</label>
+      <textarea
+        class="field-textarea"
+        id="resumeInput"
+        rows="7"
+        placeholder="把简历正文粘进来：教育背景、实习与项目经历、技能证书、获奖情况……"
+      ></textarea>
+      <p class="field-hint">面试官会照着你写的项目经历追问细节。不填也能面，但问题会偏通用。</p>
+    </div>
+
+    <div class="modal-foot">
+      <button class="btn-ghost" type="button" id="setupCancel">取消</button>
+      <button class="btn-solid" type="button" id="setupStart">进入面试</button>
+    </div>
+  </dialog>
+
+  <!-- 面试模拟对话框 -->
+  <dialog class="modal" id="interviewModal" aria-labelledby="modalTitle">
+    <div class="modal-head">
+      <p class="modal-eyebrow">定制化面试 · 5 轮追问</p>
+      <h2 class="modal-title" id="modalTitle">面试模拟</h2>
+      <span class="interview-progress" id="interviewProgress">第 1 / 5 轮</span>
+      <button class="modal-close" type="button" id="modalClose" aria-label="关闭对话框"></button>
+    </div>
+
+    <div class="modal-body" id="interviewBody">
+      <div class="chat" id="chatLog"></div>
+
+      <div id="answerBlock">
+        <div class="answer-head">
+          <label class="answer-label" for="answerInput">你的回答</label>
+          <span class="answer-count" id="answerCount">0 字</span>
+        </div>
+        <textarea
+          class="answer-input"
+          id="answerInput"
+          rows="4"
+          placeholder="先给结论，再讲理由和做法。写要点就行，不用润色。"
+        ></textarea>
+
+        <div class="voice-bar">
+          <button class="voice-btn" type="button" id="voiceBtn" aria-pressed="false">
+            <svg class="voice-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 14.5a3 3 0 0 0 3-3v-5a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3Z" fill="currentColor" />
+              <path
+                d="M17.5 11.5a5.5 5.5 0 0 1-11 0M12 17v3.5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linecap="round"
+              />
+            </svg>
+            <span id="voiceLabel">语音输入</span>
+          </button>
+          <span class="voice-hint" id="voiceHint">点一下开始说，停顿几秒自动结束</span>
+        </div>
+      </div>
+
+      <div class="feedback" id="feedbackBox" hidden>
+        <p class="feedback-head">
+          <span class="feedback-dot" aria-hidden="true"></span>
+          <span id="feedbackTitle">面试官点评</span>
+        </p>
+        <p class="feedback-text" id="feedbackText"></p>
+      </div>
+    </div>
+
+    <div class="modal-foot">
+      <button class="btn-ghost" type="button" id="interviewEnd">结束并评价</button>
+      <button class="btn-solid" type="button" id="submitAnswer">提交回答</button>
+    </div>
+  </dialog>
+
+  <!-- 笔试答题面板 -->
+  <dialog class="modal modal-quiz" id="quizModal" aria-labelledby="quizTitle">
+    <div class="modal-head">
+      <p class="modal-eyebrow">笔试模拟 · AI 出题</p>
+      <h2 class="modal-title" id="quizTitle">三桶油笔试小测</h2>
+      <button class="modal-close" type="button" id="quizClose" aria-label="关闭答题面板"></button>
+    </div>
+
+    <div class="modal-body" id="quizBody">
+      <!-- 出题中 / 出题失败 -->
+      <div class="quiz-loading" id="quizLoading" hidden>
+        <span class="quiz-spinner" aria-hidden="true"></span>
+        <p class="quiz-loading-text" id="quizLoadingText">正在为你出题，请稍候…</p>
+        <p class="quiz-loading-sub" id="quizLoadingSub"></p>
+      </div>
+
+      <!-- 题面 -->
+      <div class="quiz-content" id="quizContent">
+        <p class="quiz-notice" id="quizNotice" hidden></p>
+        <p class="quiz-progress" id="quizProgress">已答 0 / 5</p>
+
+        <div class="quiz-result" id="quizResult" hidden>
+          <span class="quiz-score" id="quizScore"></span>
+          <span class="quiz-score-note" id="quizScoreNote"></span>
+        </div>
+
+        <div class="quiz-list" id="quizList"></div>
+      </div>
+    </div>
+
+    <div class="modal-foot">
+      <button class="btn-ghost" type="button" id="quizCancel">取消</button>
+      <button class="btn-solid" type="button" id="quizSubmit">交卷</button>
+    </div>
+  </dialog>
+
+  <script src="script.js"></script>
+</body>
+</html>
