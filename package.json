@@ -1,0 +1,16 @@
+{
+  "name": "oil-interview-workbench",
+  "version": "1.0.0",
+  "private": true,
+  "description": "中海油 AI 面试模拟器：静态页面 + DeepSeek 代理 + 可选云开发同步",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node proxy.js"
+  },
+  "dependencies": {
+    "@cloudbase/node-sdk": "latest",
+    "chart.js": "^4.4.0"
+  }
+}
