@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0B2C4A" />
+  <title>中海油面试模拟</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app">
+
+    <!-- 顶部：标题 + 日期 -->
+    <header class="hero">
+      <p class="hero-eyebrow">2027 届校招 · AI 面试</p>
+      <h1 class="hero-title">中海油面试模拟</h1>
+      <p class="hero-date" id="todayDate"></p>
+    </header>
+
+    <!-- 今日学习时间 -->
+    <section class="card" aria-labelledby="timeTitle">
+      <div class="card-head">
+        <h2 class="card-title" id="timeTitle">今日学习时间</h2>
+        <span class="card-note">目标随时可改</span>
+      </div>
+
+      <p class="time-value">
+        <span class="time-number" id="minutesValue">0</span>
+        <span class="time-unit">分钟</span>
+      </p>
+
+      <label class="goal-label" for="goalInput">今天打算学多少分钟</label>
+      <div class="goal-field">
+        <input
+          class="goal-input"
+          id="goalInput"
+          type="number"
+          inputmode="numeric"
+          min="0"
+          max="600"
+          step="10"
+          placeholder="例如 90"
+        />
+        <span class="goal-suffix">分钟</span>
+      </div>
+
+      <div
+        class="progress"
+        id="progressTrack"
+        role="progressbar"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuenow="0"
+        aria-label="今日学习进度"
+      >
+        <span class="progress-fill" id="progressFill"></span>
+      </div>
+      <p class="progress-text" id="progressText"></p>
+    </section>
+
+    <!-- 唯一入口：AI 面试 -->
+    <section class="actions" aria-label="面试入口">
+      <button class="action-btn" type="button" id="btnInterview">
+        <span class="action-main">
+          <span class="action-title">开始 AI 面试</span>
+          <span class="action-sub">选岗位 · 贴简历 · 30 秒思考后开口</span>
+        </span>
+        <span class="action-arrow" aria-hidden="true"></span>
+      </button>
+    </section>
+
+    <!-- 面试档案入口 -->
+    <button class="entry-btn" type="button" id="btnArchive">
+      <span class="entry-main">
+        <span class="entry-title">查看我的面试档案</span>
+        <span class="entry-sub">历次复盘报告都存在这里，可生成高频错误诊断书</span>
+      </span>
+      <span class="entry-count is-zero" id="archiveCount">0</span>
+      <span class="action-arrow" aria-hidden="true"></span>
+    </button>
+
+    <!-- 今日任务 -->
+    <section class="card" aria-labelledby="taskTitle">
+      <div class="card-head">
+        <h2 class="card-title" id="taskTitle">今日任务</h2>
+        <span class="card-note" id="taskCount">0 / 1 已完成</span>
+      </div>
+
+      <ul class="task-list">
+        <li class="task-item" data-task="interview">
+          <span class="task-check" aria-hidden="true"></span>
+          <span class="task-name">面试</span>
+          <span class="task-status">未完成</span>
+        </li>
+      </ul>
+    </section>
+
+    <p class="foot-note">记录只保存在当前浏览器，换设备或清理缓存会重新开始。</p>
+
+    <!-- 云端同步 -->
+    <section class="card" aria-labelledby="syncTitle">
+      <div class="card-head">
+        <h2 class="card-title" id="syncTitle">云端同步</h2>
+        <span class="card-note" id="syncStatus">未绑定</span>
+      </div>
+
+      <label class="goal-label" for="syncInput">同步码（自己设，英文/数字，4-32 位）</label>
+      <div class="sync-row">
+        <input
+          class="sync-input"
+          id="syncInput"
+          type="text"
+          maxlength="32"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="例如 my2027cnooc"
+        />
+        <button class="btn-solid sync-btn" type="button" id="syncSave">绑定并同步</button>
+      </div>
+      <p class="field-hint">手机和电脑填同一个同步码，就能看到同一份学习记录。</p>
+    </section>
+
+  </main>
+
+  <!-- 面试设置面板：先定岗位和简历，再进面试 -->
+  <dialog class="modal modal-setup" id="setupModal" aria-labelledby="setupTitle">
+    <div class="modal-head">
+      <p class="modal-eyebrow">面试设置 · 定制化</p>
+      <h2 class="modal-title" id="setupTitle">先定岗位和简历</h2>
+      <button class="modal-close" type="button" id="setupClose" aria-label="关闭设置面板"></button>
+    </div>
+
+    <div class="modal-body">
+      <label class="field-label" for="roleSelect">面试岗位</label>
+      <select class="field-select" id="roleSelect">
+        <option value="中海油-中海油服（COSL）">中海油 · 中海油服（COSL）</option>
+        <option value="中海油-海南分公司">中海油 · 海南分公司</option>
+        <option value="中海油-湛江分公司">中海油 · 湛江分公司</option>
+        <option value="中海油-能源发展">中海油 · 能源发展（海油发展）</option>
+        <option value="综合管培生/通用岗位">综合管培生 / 通用岗位</option>
+      </select>
+
+      <label class="field-label" for="resumeInput">简历文本</label>
+      <textarea
+        class="field-textarea"
+        id="resumeInput"
+        rows="7"
+        placeholder="把简历正文粘进来：教育背景、实习与项目经历、技能证书、获奖情况……"
+      ></textarea>
+      <p class="field-hint">面试官会照着你写的项目经历追问细节。不填也能面，但问题会偏通用。</p>
+    </div>
+
+    <div class="modal-foot">
+      <button class="btn-ghost" type="button" id="setupCancel">取消</button>
+      <button class="btn-solid" type="button" id="setupStart">进入面试</button>
+    </div>
+  </dialog>
+
+  <!-- 面试模拟对话框 -->
+  <dialog class="modal" id="interviewModal" aria-labelledby="modalTitle">
+    <div class="modal-head">
+      <p class="modal-eyebrow">定制化面试 · 压力面</p>
+      <h2 class="modal-title" id="modalTitle">面试模拟</h2>
+      <button class="fs-btn" type="button" id="fsBtn" hidden>全屏</button>
+      <span class="interview-progress" id="interviewProgress">第 1 / 12 轮</span>
+      <button class="modal-close" type="button" id="modalClose" aria-label="关闭对话框"></button>
+    </div>
+
+    <div class="modal-body" id="interviewBody">
+      <div class="chat" id="chatLog"></div>
+
+      <div id="answerBlock">
+        <!-- 作答阶段：30 秒思考 → 3 分钟限时作答，全自动流转 -->
+        <div class="answer-stage" id="answerStage" data-stage="idle">
+          <p class="answer-stage-text" id="answerStageText">面试开始后自动进入 30 秒思考</p>
+          <span class="answer-stage-timer" id="answerStageTimer">--:--</span>
+        </div>
+
+        <div class="answer-head">
+          <label class="answer-label" for="answerInput">你的回答</label>
+          <span class="answer-count" id="answerCount">0 字</span>
+        </div>
+
+        <!-- 口头禅实时统计 -->
+        <p class="filler-line" id="fillerLine">口头禅：嗯(0) 啊(0) 那个(0) 然后(0) 就是(0)</p>
+        <div class="voice-preview" id="voicePreviewWrap" hidden>
+          <audio id="voicePreview" controls preload="metadata"></audio>
+          <p class="voice-preview-note">语音已录制，请手动输入你的回答文字</p>
+        </div>
+
+        <div class="answer-row">
+          <textarea
+            class="answer-input"
+            id="answerInput"
+            rows="4"
+            placeholder="30 秒思考后开始计时 3 分钟；可打字，也可点右侧麦克风作答。"
+            disabled
+          ></textarea>
+
+          <button class="mic-btn" type="button" id="voiceBtn" aria-pressed="false" aria-label="开始语音输入">
+            <svg class="mic-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 14.5a3 3 0 0 0 3-3v-5a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3Z" fill="currentColor" />
+              <path
+                d="M17.5 11.5a5.5 5.5 0 0 1-11 0M12 17v3.5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linecap="round"
+              />
+            </svg>
+            <span class="mic-text" id="voiceLabel">语音</span>
+          </button>
+        </div>
+
+        <div class="voice-bar">
+          <button class="voice-fallback" type="button" id="recordBtn">改用录音</button>
+          <span class="voice-hint" id="voiceHint">思考结束后自动解锁，可打字或点麦克风</span>
+        </div>
+      </div>
+
+      <div class="feedback" id="feedbackBox" hidden>
+        <p class="feedback-head">
+          <span class="feedback-dot" aria-hidden="true"></span>
+          <span id="feedbackTitle">面试官点评</span>
+        </p>
+        <p class="feedback-text" id="feedbackText"></p>
+      </div>
+    </div>
+
+    <div class="modal-foot">
+      <button class="btn-ghost" type="button" id="interviewEnd">结束面试并生成报告</button>
+      <button class="btn-solid" type="button" id="submitAnswer" disabled>提交回答</button>
+    </div>
+  </dialog>
+
+  <!-- 面试复盘报告 -->
+  <dialog class="modal modal-report" id="reportModal" aria-labelledby="reportTitle">
+    <div class="modal-head">
+      <p class="modal-eyebrow">面试复盘 · AI 评委</p>
+      <h2 class="modal-title" id="reportTitle">面试复盘报告</h2>
+      <button class="modal-close" type="button" id="reportClose" aria-label="关闭报告"></button>
+    </div>
+
+    <div class="modal-body" id="reportBody">
+      <div class="report-chart-wrap" id="reportChartWrap" hidden>
+        <canvas id="reportChart"></canvas>
+      </div>
+      <p class="report-scores" id="reportScores" hidden></p>
+      <div class="report-text" id="reportText"></div>
+    </div>
+
+    <div class="modal-foot">
+      <button class="btn-solid" type="button" id="reportDone">关闭</button>
+    </div>
+  </dialog>
+
+  <!-- 我的面试档案 -->
+  <dialog class="modal modal-wide" id="archiveModal" aria-labelledby="archiveTitle">
+    <div class="modal-head">
+      <p class="modal-eyebrow">面试档案 · 历次复盘</p>
+      <h2 class="modal-title" id="archiveTitle">我的面试档案</h2>
+      <span class="head-pill" id="archiveTotal">0 次</span>
+      <button class="modal-close" type="button" id="archiveClose" aria-label="关闭面试档案"></button>
+    </div>
+
+    <div class="modal-body" id="archiveBody">
+      <p class="entry-empty" id="archiveEmpty">
+        还没有面试记录。结束一场面试并生成复盘报告后，会自动存到这里。
+      </p>
+
+      <div class="archive-list" id="archiveList"></div>
+      <p class="archive-more" id="archiveMore" hidden></p>
+
+      <button class="archive-big" type="button" id="archiveDiagnose" disabled>
+        AI 帮我生成高频错误诊断书
+      </button>
+
+      <div class="archive-diagnosis" id="archiveDiagnosis" hidden>
+        <p class="archive-diagnosis-title" id="archiveDiagnosisTitle">高频错误诊断书</p>
+        <p class="archive-diagnosis-text" id="archiveDiagnosisText"></p>
+      </div>
+    </div>
+
+    <div class="modal-foot">
+      <button class="btn-solid" type="button" id="archiveDone">关闭</button>
+    </div>
+  </dialog>
+
+  <!-- 轻提示：不打断操作，2.6 秒自动消失 -->
+  <div class="toast" id="appToast" role="status" aria-live="polite"></div>
+
+  <script src="chart.umd.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
